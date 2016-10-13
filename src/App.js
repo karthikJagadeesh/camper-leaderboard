@@ -14,6 +14,7 @@ class Heading extends Component {
 
 class Table extends Component {
     render() {
+        //styles
         const divStyles = {
             display: 'table',
             margin: '30px auto 0px auto'
@@ -22,17 +23,24 @@ class Table extends Component {
             padding: '30px',
             border: '1px solid #666'
         }
+
+        const tableHeaderNames = ['#', 'Camper Name', 'Points in 30 days', 'All time Points']
+
         return (
             <div style={divStyles}>
                 <table>
                     <thead>
                         <tr>
-                            <th style={tableHeaderStyles}>#</th>
-                            <th style={tableHeaderStyles}>Camper Name</th>
-                            <th style={tableHeaderStyles}>Points in 30 days</th>
-                            <th style={tableHeaderStyles}>All time Points</th>
+                            {
+                                tableHeaderNames.map(name => <th style={tableHeaderStyles}>{name}</th>)
+                            }
                         </tr>
                     </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         )
