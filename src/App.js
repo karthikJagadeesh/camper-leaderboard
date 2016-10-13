@@ -1,21 +1,53 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from 'react'
+import './App.css'
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+class Heading extends Component {
+    render() {
+        return (
+            <div className="text-center header">
+                <h1>CAMPER LEADERBOARD</h1>
+            </div>
+        )
+    }
 }
 
-export default App;
+class Table extends Component {
+    render() {
+        const divStyles = {
+            display: 'table',
+            margin: '30px auto 0px auto'
+        }
+        const tableHeaderStyles = {
+            padding: '30px',
+            border: '1px solid #666'
+        }
+        return (
+            <div style={divStyles}>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style={tableHeaderStyles}>#</th>
+                            <th style={tableHeaderStyles}>Camper Name</th>
+                            <th style={tableHeaderStyles}>Points in 30 days</th>
+                            <th style={tableHeaderStyles}>All time Points</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        )
+    }
+}
+
+class App extends Component {
+    render() {
+        return (
+            <div>
+                <Heading />
+                <Table />
+            </div>
+        )
+    }
+}
+
+export default App
