@@ -22,21 +22,44 @@ class Heading extends Component {
 }
 
 class TableHeading extends Component {
+    constructor() {
+        super()
+        this.handleHeaderClick = this.handleHeaderClick.bind(this)
+    }
+
+    handleHeaderClick(event) {
+        console.log(this.refs)
+    }
+
     render() {
-        //styles
         const tableHeaderStyles = {
             padding: '30px',
-            border: '1px solid #666',
-            textAlign: 'center'
+            border: '1px solid #222',
+            textAlign: 'center',
+            color: 'white'
         }
-        //...............................
+        const tableHeaderStylesWithCursor = {
+            cursor: 'pointer'
+        }
+        Object.assign(tableHeaderStylesWithCursor, tableHeaderStyles)
 
         return (
-            <thead>
+            <thead style={{backgroundColor: '#C45A2B'}}>
                 <tr>
                     {
-                        this.props.tableHeaderNames.map((name, index) =>
-                            <th key={index} style={tableHeaderStyles}>{name}</th>)
+                        this.props.tableHeaderNames.map((name, index) => {
+                            if(name === 'Points in 30 days' || name === 'All time Points')
+                                return (
+                                    <th
+                                        key={index}
+                                        ref={name}
+                                        style={tableHeaderStylesWithCursor}
+                                        onClick={this.handleHeaderClick}>
+                                            {name} &#x25BC;
+                                    </th>
+                                )
+                            return <th key={index} style={tableHeaderStyles}>{name}</th>
+                        })
                     }
                 </tr>
             </thead>
@@ -48,8 +71,9 @@ class TableData extends Component {
     render() {
         const tableDataStyles = {
             padding: ' 10px 30px',
-            border: '1px solid #666',
-            textAlign: 'center'
+            border: '1px solid #222',
+            textAlign: 'center',
+            color: '#277'
         }
 
         return (
@@ -65,6 +89,24 @@ class TableData extends Component {
                     )
                 }) }
             </tbody>
+        )
+    }
+}
+
+class Footer extends Component {
+    render() {
+        const style = {
+            textRendering: 'geometricPrecision',
+            transform: 'scaleY(1.1)',
+            color: '#C75B2C',
+            letterSpacing: '1px',
+            textAlign: 'center'
+        }
+
+        return(
+            <div style={style}>
+                <h5>made with &hearts; react &hearts;</h5>
+            </div>
         )
     }
 }
@@ -87,14 +129,14 @@ class Table extends Component {
                 topRecent: data
             })
         })
-        $.ajax({
-            url: 'https://fcctop100.herokuapp.com/api/fccusers/top/alltime',
-            dataType: 'json'
-        }).done((data) => {
-            this.setState({
-                topAllTime: data
-            })
-        })
+        // $.ajax({
+        //     url: 'https://fcctop100.herokuapp.com/api/fccusers/top/alltime',
+        //     dataType: 'json'
+        // }).done((data) => {
+        //     this.setState({
+        //         topAllTime: data
+        //     })
+        // })
     }
 
     render() {
@@ -106,11 +148,9 @@ class Table extends Component {
 
         return (
             <div style={divStyles}>
-                <table>
+                <table style={{marginBottom: '30px'}}>
                     <TableHeading tableHeaderNames={tableHeaderNames} />
-
                     <TableData topRecent={this.state.topRecent} topAllTime={this.state.topAllTime} />
-
                 </table>
             </div>
         )
@@ -123,6 +163,7 @@ class App extends Component {
             <div>
                 <Heading />
                 <Table />
+                <Footer />
             </div>
         )
     }
