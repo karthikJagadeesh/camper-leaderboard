@@ -15,7 +15,7 @@ class Heading extends Component {
 
     return (
       <div style={style}>
-      <h1>CAMPER LEADERBOARD</h1>
+        <h1>CAMPER LEADERBOARD</h1>
       </div>
     )
   }
@@ -41,32 +41,28 @@ class TableHeading extends Component {
       border: '1px solid #222',
       textAlign: 'center',
       color: 'white'
-    }
-    const tableHeaderStylesWithCursor = Object.assign({
+    },
+    tableHeaderStylesWithCursor = Object.assign({
       cursor: 'pointer'
-    }, tableHeaderStyles)
+    }, tableHeaderStyles),
+    tableHeaderNames = this.props.tableHeaderNames.map((name, index) => {
+      if(name === 'Points in 30 days' || name === 'All time Points')
+      return (
+        <th
+          key={index}
+          style={tableHeaderStylesWithCursor}
+          onClick={(name === 'Points in 30 days') ?
+          this.handle30DaysClick :
+          this.handleAllTimeClick}>
+          {name} &#x25BC;
+        </th>
+      )
+      return <th key={index} style={tableHeaderStyles}>{name}</th>
+    })
 
     return (
       <thead style={{backgroundColor: '#C45A2B'}}>
-      <tr>
-      {
-        this.props.tableHeaderNames.map((name, index) => {
-          if(name === 'Points in 30 days' || name === 'All time Points')
-          return (
-            <th
-            key={index}
-            ref={name}
-            style={tableHeaderStylesWithCursor}
-            onClick={(name === 'Points in 30 days') ?
-            this.handle30DaysClick :
-            this.handleAllTimeClick}>
-            {name} &#x25BC;
-            </th>
-          )
-          return <th key={index} style={tableHeaderStyles}>{name}</th>
-        })
-      }
-      </tr>
+        <tr> { tableHeaderNames } </tr>
       </thead>
     )
   }
@@ -79,27 +75,24 @@ class TableData extends Component {
       border: '1px solid #222',
       textAlign: 'center',
       color: '#277'
-    }
-    const imageDataStyle = Object.assign({}, tableDataStyles)
+    },
+    imageDataStyle = Object.assign({}, tableDataStyles)
     imageDataStyle.textAlign = 'left'
-
-    return (
-      <tbody>
-      { this.props.campersData.map((camper, index) => {
-        return (
-          <tr key={index}>
+    const campersData = this.props.campersData.map((camper, index) => {
+      return (
+        <tr key={index}>
           <td style={tableDataStyles}>{index + 1}</td>
           <td
-          style={imageDataStyle}>
-          <img src={camper.img} alt='camper pic' style={{width: '30px', height: '30px', marginRight: '1px'}}/>  {camper.username}
+            style={imageDataStyle}>
+            <img src={camper.img} alt='camper pic' style={{width: '30px', height: '30px', marginRight: '1px'}}/>  {camper.username}
           </td>
           <td style={tableDataStyles}>{camper.recent}</td>
           <td style={tableDataStyles}>{camper.alltime}</td>
-          </tr>
-        )
-      }) }
-      </tbody>
-    )
+        </tr>
+      )
+    })
+
+    return <tbody> { campersData } </tbody>
   }
 }
 
@@ -115,7 +108,7 @@ class Footer extends Component {
 
     return(
       <div style={style}>
-      <h5>made with &hearts; react &hearts;</h5>
+        <h5>made with &hearts; react &hearts;</h5>
       </div>
     )
   }
@@ -125,8 +118,6 @@ class Table extends Component {
   constructor() {
     super()
     this.state = {
-      recentData: [],
-      allTimeData: [],
       campersData: []
     }
     this.handle30DaysClick = this.handle30DaysClick.bind(this)
@@ -146,15 +137,15 @@ class Table extends Component {
   }
 
   componentWillMount() {
-    this.getData('https://fcctop100.herokuapp.com/api/fccusers/top/recent')
+    this.getData(this.props.urlRecent)
   }
 
   handle30DaysClick() {
-    this.getData('https://fcctop100.herokuapp.com/api/fccusers/top/recent')
+    this.getData(this.props.urlRecent)
   }
 
   handleAllTimeClick() {
-    this.getData('https://fcctop100.herokuapp.com/api/fccusers/top/alltime')
+    this.getData(this.props.urlAllTime)
   }
 
   render() {
@@ -167,11 +158,11 @@ class Table extends Component {
 
     return (
       <div style={divStyles}>
-        <table style={{marginBottom: '30px'}}>
+        <table style={{marginBottom: '30px'}} >
           <TableHeading
-          tableHeaderNames={tableHeaderNames}
-          handle30DaysClick={this.handle30DaysClick}
-          handleAllTimeClick={this.handleAllTimeClick}/>
+            tableHeaderNames={tableHeaderNames}
+            handle30DaysClick={this.handle30DaysClick}
+            handleAllTimeClick={this.handleAllTimeClick}/>
           <TableData campersData={this.state.campersData} />
         </table>
       </div>
@@ -183,9 +174,11 @@ class App extends Component {
   render() {
     return (
       <div>
-      <Heading />
-      <Table />
-      <Footer />
+        <Heading />
+        <Table
+          urlRecent="https://fcctop100.herokuapp.com/api/fccusers/top/recent"
+          urlAllTime="https://fcctop100.herokuapp.com/api/fccusers/top/alltime"/>
+        <Footer />
       </div>
     )
   }
