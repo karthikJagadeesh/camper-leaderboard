@@ -34,18 +34,15 @@ class TableHeading extends Component {
     const tableHeaderStylesWithCursor = Object.assign({ cursor: 'pointer' }, tableHeaderStyles)
 
     const tableHeaderNames = this.props.tableHeaderNames.map((name, index) => {
+      const attrs = {
+        style: tableHeaderStylesWithCursor,
+        onClick: (name === 'Points in 30 days') ? this.props.handle30DaysClick : this.props.handleAllTimeClick
+      }
+
       if(name === 'Points in 30 days' || name === 'All time Points')
-        return (
-          <th
-            key={index}
-            style={tableHeaderStylesWithCursor}
-            onClick={(name === 'Points in 30 days') ?
-            this.props.handle30DaysClick :
-            this.props.handleAllTimeClick}>
-            {name} &#x25BC;
-          </th>
-        )
-      return <th key={index} style={tableHeaderStyles}>{name}</th>
+        return <th key={name} {...attrs} > {name} &#x25BC; </th>
+
+      return <th key={name} style={tableHeaderStyles}>{name}</th>
     })
 
     return (
@@ -56,23 +53,7 @@ class TableHeading extends Component {
   }
 }
 
-class TableRows extends Component {
-  render() {
-    return (
-      <tr key={this.props.index}>
-        <td style={this.props.tableDataStyles}>{this.props.index + 1}</td>
-        <td
-          style={this.props.imageDataStyle}>
-          <img src={this.props.camper.img} alt='camper pic' style={{width: '30px', height: '30px', marginRight: '1px'}}/>  {this.props.camper.username}
-        </td>
-        <td style={this.props.tableDataStyles}>{this.props.camper.recent}</td>
-        <td style={this.props.tableDataStyles}>{this.props.camper.alltime}</td>
-      </tr>
-    )
-  }
-}
-
-class TableData extends Component {
+class TableRow extends Component {
   render() {
     const tableDataStyles = {
       padding: ' 10px 30px',
@@ -81,16 +62,24 @@ class TableData extends Component {
       color: '#277'
     }
     const imageDataStyle = Object.assign({}, tableDataStyles, { textAlign: 'left' })
+    const { index, camper } = this.props
 
-    const campersData = this.props.campersData.map((camper, index) => {
-      return (
-        <TableRows
-          index={index}
-          tableDataStyles={tableDataStyles}
-          imageDataStyle={imageDataStyle}
-          camper={camper} />
-      )
-    })
+    return (
+      <tr>
+        <td style={tableDataStyles}>{index + 1}</td>
+        <td style={imageDataStyle}>
+          <img src={camper.img} alt='camper pic' style={{width: '30px', height: '30px', marginRight: '1px'}}/>  {camper.username}
+        </td>
+        <td style={tableDataStyles}>{camper.recent}</td>
+        <td style={tableDataStyles}>{camper.alltime}</td>
+      </tr>
+    )
+  }
+}
+
+class TableData extends Component {
+  render() {
+    const campersData = this.props.campersData.map((camper, index) => (<TableRow key={camper.username} index={index} camper={camper} />))
 
     return <tbody> { campersData } </tbody>
   }
@@ -115,38 +104,27 @@ class Footer extends Component {
 }
 
 class Table extends Component {
-  constructor() {
-    super()
-    this.state = {
-      campersData: []
-    }
-    this.handle30DaysClick = this.handle30DaysClick.bind(this)
-    this.handleAllTimeClick = this.handleAllTimeClick.bind(this)
-    this.getData = this.getData.bind(this)
+  constructor(props, context) {
+    super(props, context)
+    this.getData(this.props.urlRecent)
+    this.state = { campersData: [] }
   }
 
-  getData(url) {
-    ajax({
-      url: url,
-      dataType: 'json'
-    }).done(data => {
+  getData = (url) => {
+    fetch(url).then(res => res.json()).then(data => {
       this.setState({
         campersData: data
       })
     })
-  }
+  };
 
-  componentWillMount() {
+  handle30DaysClick = () => {
     this.getData(this.props.urlRecent)
-  }
+  };
 
-  handle30DaysClick() {
-    this.getData(this.props.urlRecent)
-  }
-
-  handleAllTimeClick() {
+  handleAllTimeClick = () => {
     this.getData(this.props.urlAllTime)
-  }
+  };
 
   render() {
     const divStyles = {
@@ -155,14 +133,16 @@ class Table extends Component {
       width: '700px'
     }
     const tableHeaderNames = ['#', 'Camper Name', 'Points in 30 days', 'All time Points']
+    const attrs = {
+      tableHeaderNames: tableHeaderNames,
+      handle30DaysClick: this.handle30DaysClick,
+      handleAllTimeClick: this.handleAllTimeClick
+    }
 
     return (
       <div style={divStyles}>
         <table style={{marginBottom: '30px'}} >
-          <TableHeading
-            tableHeaderNames={tableHeaderNames}
-            handle30DaysClick={this.handle30DaysClick}
-            handleAllTimeClick={this.handleAllTimeClick}/>
+          <TableHeading {...attrs} />
           <TableData campersData={this.state.campersData} />
         </table>
       </div>
